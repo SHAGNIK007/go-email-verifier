@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Email Domain Verifier</title>
+
+<style>
+
+*{
+box-sizing:border-box;
+}
+
+body{
+background:#0b0b0b;
+color:#ffd000;
+font-family:monospace;
+margin:0;
+display:flex;
+align-items:center;
+justify-content:center;
+height:100vh;
+}
+
+.container{
+width:650px;
+max-width:90%;
+}
+
+.header{
+text-align:center;
+margin-bottom:40px;
+}
+
+.header h1{
+margin:0;
+font-size:28px;
+letter-spacing:2px;
+}
+
+.header p{
+color:#aaa;
+font-size:14px;
+margin-top:10px;
+}
+
+.inputBox{
+display:flex;
+gap:10px;
+margin-bottom:30px;
+}
+
+input{
+flex:1;
+padding:14px;
+background:#000;
+border:1px solid #ffd000;
+color:#ffd000;
+font-size:15px;
+outline:none;
+}
+
+button{
+padding:14px 22px;
+background:#ffd000;
+border:none;
+cursor:pointer;
+font-weight:bold;
+transition:0.2s;
+}
+
+button:hover{
+background:#ffdf33;
+}
+
+.card{
+background:#000;
+border:1px solid #ffd000;
+padding:25px;
+min-height:160px;
+white-space:pre-line;
+}
+
+.status{
+margin-bottom:15px;
+font-weight:bold;
+font-size:16px;
+}
+
+.ok{
+color:#00ff88;
+}
+
+.bad{
+color:#ff4d4d;
+}
+
+.footer{
+margin-top:25px;
+text-align:center;
+font-size:12px;
+color:#777;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+<h1>Email Domain Verifier</h1>
+<p>Check MX, SPF and DMARC records instantly</p>
+</div>
+
+<div class="inputBox">
+<input id="domain" placeholder="example.com">
+<button onclick="verify()">Verify</button>
+</div>
+
+<div class="card">
+<div class="status" id="status"></div>
+<div id="result">Enter a domain to analyze email configuration.</div>
+</div>
+
+<div class="footer">
+Powered by Go DNS lookup
+</div>
+
+</div>
+
+<script>
+
+async function verify(){
+
+const domain=document.getElementById("domain").value
+
+if(!domain){
+alert("Enter a domain")
+return
+}
+
+document.getElementById("result").innerText="Scanning domain..."
+
+const res=await fetch(`/verify?domain=${domain}`)
+const text=await res.text()
+
+document.getElementById("result").innerText=text
+
+if(text.includes("DMARC: true") && text.includes("SPF: true") && text.includes("MX: true")){
+document.getElementById("status").innerHTML="<span class='ok'>✓ Domain Properly Configured</span>"
+}else{
+document.getElementById("status").innerHTML="<span class='bad'>✗ Missing Some Email Records</span>"
+}
+
+}
+
+</script>
+
+</body>
+</html>
